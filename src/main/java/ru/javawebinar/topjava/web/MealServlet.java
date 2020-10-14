@@ -17,22 +17,33 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
+import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDate;
+import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 
 public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
 
     private MealRestController controller;
+    ConfigurableApplicationContext apctx;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
-        ConfigurableApplicationContext apctx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
+        apctx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
         super.init(config);
         controller = apctx.getBean(MealRestController.class);
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        apctx.close();
     }
 
     @Override
@@ -71,6 +82,14 @@ public class MealServlet extends HttpServlet {
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
+            case "filter":
+                LocalDate dateStart = parseLocalDate(request.getParameter("dateStart"));
+                LocalDate dateEnd = parseLocalDate(request.getParameter("dateEnd"));
+                LocalTime timeStart = parseLocalTime(request.getParameter("timeStart"));
+                LocalTime timeEnd = parseLocalTime(request.getParameter("timeEnd"));
+                request.setAttribute("meals", controller.getFilterMealsToByDateTime(dateStart, dateEnd,
+                        timeStart, timeEnd, authUserId()));
+                request.getRequestDispatcher("meals.jsp").forward(request, response);
             case "all":
             default:
                 log.info("getAll");
