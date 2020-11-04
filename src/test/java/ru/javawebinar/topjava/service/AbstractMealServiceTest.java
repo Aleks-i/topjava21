@@ -9,8 +9,8 @@ import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.dao.DataAccessException;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
@@ -36,7 +36,7 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 @ActiveProfiles(resolver = ActiveDbProfileResolver.class)
-public class MealServiceTest {
+public abstract class AbstractMealServiceTest {
     private static final Logger log = getLogger("result");
 
     private static final StringBuilder results = new StringBuilder();
@@ -52,9 +52,6 @@ public class MealServiceTest {
         }
     };
 
-    @Autowired
-    private MealService service;
-
     @AfterClass
     public static void printResult() {
         log.info("\n---------------------------------" +
@@ -63,6 +60,9 @@ public class MealServiceTest {
                 results +
                 "\n---------------------------------");
     }
+
+    @Autowired
+    private MealService service;
 
     @Test
     public void delete() {
@@ -95,7 +95,6 @@ public class MealServiceTest {
         assertThrows(DataAccessException.class, () ->
                 service.create(new Meal(null, meal1.getDateTime(), "duplicate", 100), USER_ID));
     }
-
 
     @Test
     public void get() {
