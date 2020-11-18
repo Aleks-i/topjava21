@@ -24,7 +24,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
-import static ru.javawebinar.topjava.util.ValidatorForJdbc.validate;
+import static ru.javawebinar.topjava.util.ValidationUtil.validate;
 
 @Repository
 @Transactional(readOnly = true)
@@ -58,13 +58,15 @@ public class JdbcUserRepository implements UserRepository {
         if (user.isNew()) {
             Number newKey = insertUser.executeAndReturnKey(parameterSource);
             user.setId(newKey.intValue());
-        } else if (namedParameterJdbcTemplate.update("""
-                   UPDATE users SET name=:name, email=:email, password=:password, 
-                   registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id
-                """, parameterSource) == 0) {
-            return null;
+        } else {
+            if (namedParameterJdbcTemplate.update("""
+                       UPDATE users SET name=:name, email=:email, password=:password, 
+                       registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id
+                    """, parameterSource) == 0) {
+                return null;
+            }
+            jdbcTemplate.update("DELETE FROM USER_ROLES WHERE USER_ID=?", user.getId());
         }
-        jdbcTemplate.update("DELETE FROM USER_ROLES WHERE USER_ID=?", user.getId());
         batchInsertRoles(user);
         return user;
     }
@@ -119,28 +121,13 @@ public class JdbcUserRepository implements UserRepository {
             @Override
             public Map extractData(ResultSet rs) throws SQLException, DataAccessException {
                 while (rs.next()) {
-                    Integer userId = rs.getInt("user_id");
-                    Role role = Role.valueOf(rs.getString("role"));
-                    Set<Role> roles = mapWithRoles.get(userId);
-                    if (roles == null) {
-                        roles = new HashSet<Role>();
-                        roles.add(role);
-                    }
-                    Set<Role> finalRoles = roles;
-                    mapWithRoles.merge(userId, roles,
-                            (a, b) -> getRoles(finalRoles, role));
+                    mapWithRoles.computeIfAbsent(rs.getInt("user_id"), userId -> EnumSet.noneOf(Role.class))
+                            .add(Role.valueOf(rs.getString("role")));
                 }
                 return mapWithRoles;
             }
         });
         return mapWithRoles;
-    }
-
-    private Set<Role> getRoles(Set<Role> roles, Role role) {
-        if (!roles.contains(role)) {
-            roles.add(role);
-        }
-        return roles;
     }
 
     private void batchInsertRoles(User user) {

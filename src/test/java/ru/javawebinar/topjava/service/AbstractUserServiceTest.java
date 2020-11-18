@@ -36,7 +36,6 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
         cacheManager.getCache("users").clear();
         if (!isJdbc()) {
             Objects.requireNonNull(jpaUtil, "jpaUtil must not be null");
-//            Assert.notNull(jpaUtil, "jpaUtil must not be null");
             jpaUtil.clear2ndLevelHibernateCache();
         }
     }

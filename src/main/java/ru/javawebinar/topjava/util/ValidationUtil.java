@@ -3,8 +3,26 @@ package ru.javawebinar.topjava.util;
 import ru.javawebinar.topjava.model.AbstractBaseEntity;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import javax.validation.*;
+import java.util.Set;
+
 public class ValidationUtil {
+
+    private static final Validator validator;
+
     private ValidationUtil() {
+    }
+
+    static {
+        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+        validator = validatorFactory.getValidator();
+    }
+
+    public static <T> void validate(T object) {
+        Set<ConstraintViolation<T>> violations = validator.validate(object);
+        if (violations.size() != 0) {
+            throw new ConstraintViolationException(violations);
+        }
     }
 
     public static <T> T checkNotFoundWithId(T object, int id) {

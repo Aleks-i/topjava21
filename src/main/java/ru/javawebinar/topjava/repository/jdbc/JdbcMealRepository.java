@@ -12,12 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 
-import javax.validation.*;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
-import static ru.javawebinar.topjava.util.ValidatorForJdbc.validate;
+import static ru.javawebinar.topjava.util.ValidationUtil.validate;
 
 @Repository
 @Transactional(readOnly = true)
