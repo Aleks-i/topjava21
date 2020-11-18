@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
+import static ru.javawebinar.topjava.util.ValidatorForJdbc.validate;
+
 @Repository
 @Transactional(readOnly = true)
 public class JdbcMealRepository implements MealRepository {
@@ -41,7 +43,7 @@ public class JdbcMealRepository implements MealRepository {
     @Override
     @Transactional
     public Meal save(Meal meal, int userId) {
-        getValidate(meal);
+        validate(meal);
         MapSqlParameterSource map = new MapSqlParameterSource()
                 .addValue("id", meal.getId())
                 .addValue("description", meal.getDescription())
@@ -87,14 +89,5 @@ public class JdbcMealRepository implements MealRepository {
         return jdbcTemplate.query(
                 "SELECT * FROM meals WHERE user_id=?  AND date_time >=  ? AND date_time < ? ORDER BY date_time DESC",
                 ROW_MAPPER, userId, startDateTime, endDateTime);
-    }
-
-    private <T> void getValidate(T object) {
-        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
-        Validator validator = validatorFactory.getValidator();
-        Set<ConstraintViolation<T>> violations = validator.validate(object);
-        if (violations.size() != 0) {
-            throw new ConstraintViolationException(violations);
-        }
     }
 }
