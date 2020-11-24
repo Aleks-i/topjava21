@@ -51,13 +51,14 @@ public class MealTo {
         MealTo mealTo = (MealTo) o;
         return calories == mealTo.calories &&
                 excess == mealTo.excess &&
+                id.equals(mealTo.id) &&
                 dateTime.equals(mealTo.dateTime) &&
                 description.equals(mealTo.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(dateTime, description, calories, excess);
+        return Objects.hash(id, dateTime, description, calories, excess);
     }
 
     @Override
