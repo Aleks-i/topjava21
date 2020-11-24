@@ -2,16 +2,16 @@
 
 ####        Users
 
-####Get All Users
+#### Get All Users
 `curl -s http://localhost:8081/topjava/rest/admin/users`
 
-####Get User 100000
+#### Get User 100000
 `curl -s http://localhost:8081/topjava/rest/admin/users/100000`
 
 #### Delete Users 100001
 `curl -s -X DELETE http://localhost:8081/topjava/rest/admin/users/100001`
 
-#### Get User By Email user@yandex.ru
+#### Get User By Email `user@yandex.ru`
 `curl -s http://localhost:8081/topjava/rest/admin/users/by?email=user@yandex.ru`
 
 ####        Meals
