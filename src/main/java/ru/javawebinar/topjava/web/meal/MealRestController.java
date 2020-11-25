@@ -18,13 +18,11 @@ import java.util.List;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @RestController()
-@RequestMapping(value = MealRestController.REST_URL)
+@RequestMapping(value = MealRestController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class MealRestController extends AbstractMealController {
     static final String REST_URL = "/rest/profile/meals";
 
-    private static final Logger log = getLogger(MealRestController.class);
-
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping("/{id}")
     public Meal get(@PathVariable int id) {
         log.debug("get meal id {}", id);
         return super.get(id);
