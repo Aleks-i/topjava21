@@ -38,6 +38,9 @@ function updateTable() {
 }
 
 function save() {
+    $("#editRow").modal({
+        backdrop: "static"
+    });
     $.ajax({
         type: "POST",
         url: ctx.ajaxUrl,
