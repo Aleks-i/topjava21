@@ -28,7 +28,10 @@
         <dt><spring:message code="meal.endTime"/>:</dt>
         <dd><input type="time" name="endTime" value="${param.endTime}"></dd>
     </dl>
-    <button type="submit"><spring:message code="meal.filter"/></button>
+    <button type="button" class="btn btn-primary" onclick="updateTable()">
+        <span class="fa fa-check"></span>
+        <spring:message code="meal.filter"/>
+    </button>
 </form>
 
 <div class="jumbotron pt-4">
@@ -57,7 +60,7 @@
                     <td>${meal.description}</td>
                     <td>${meal.calories}</td>
                     <td><a><span class="fa fa-pencil"></span></a></td>
-                    <td><a class="delete" onclick="deleteRow(${meal.id})"><span class="fa fa-remove"></span></a></td>
+                    <td><a onclick="deleteRow(${meal.id})"><span class="fa fa-remove"></span></a></td>
                 </tr>
             </c:forEach>
         </table>
