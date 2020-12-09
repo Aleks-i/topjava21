@@ -35,14 +35,15 @@ public class MealUIController extends AbstractMealController {
     }
 
     @PostMapping
-    public ResponseEntity<String> create(@Valid Meal meal, BindingResult result) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<String> createOrUpdate(@Valid Meal meal, BindingResult result) {
         if (result.hasErrors()) {
             return getErrorFieldsMsg(result);
         }
         if (meal.isNew()) {
             super.create(meal);
         } else {
-            super.update(meal, SecurityUtil.authUserId());
+            super.update(meal, meal.getId());
         }
         return ResponseEntity.ok().build();
     }
@@ -55,5 +56,11 @@ public class MealUIController extends AbstractMealController {
             @RequestParam @Nullable LocalDate endDate,
             @RequestParam @Nullable LocalTime endTime) {
         return super.getBetween(startDate, startTime, endDate, endTime);
+    }
+
+    @Override
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Meal get(@PathVariable int id) {
+        return super.get(id);
     }
 }
