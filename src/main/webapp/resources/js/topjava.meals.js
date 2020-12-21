@@ -1,5 +1,14 @@
 var mealAjaxUrl = "profile/meals/";
 
+function updateFilteredTable() {
+    $.ajax({
+        type: "GET",
+        url: mealAjaxUrl + "filter",
+        data: $("#filter").serialize()
+    }).done(updateTableByData);
+}
+
+
 var ctx = {
     ajaxUrl: mealAjaxUrl,
     updateTable: function () {
@@ -21,11 +30,9 @@ $.ajaxSetup({
     converters: {
         "text json": function (stringData) {
             var json = JSON.parse(stringData);
-            if (typeof json === 'object') {
-                $(json).each(function () {
-                    this.dateTime = this.dateTime.substr(0, 16).replace('T', ' ');
-                });
-            }
+            $(json).each(function () {
+                this.dateTime = this.dateTime.replace('T', ' ').substr(0, 16);
+            });
             return json;
         }
     }
@@ -63,7 +70,7 @@ $(function () {
         "createdRow": function (row, data, dataIndex) {
             $(row).attr("data-mealExcess", data.excess);
         },
-    });
+    }, updateFilteredTable);
 
     $.datetimepicker.setLocale(localeCode);
 

@@ -50,3 +50,6 @@
         </div>
     </div>
 </nav>
+<script>
+    var localeCode = "${pageContext.response.locale}";
+</script>
